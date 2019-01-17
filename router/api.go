@@ -5,23 +5,34 @@ import (
 	"net/http"
 
 	"github.com/RafikFarhad/hoax/controller/books"
+
 	"github.com/RafikFarhad/hoax/response"
+	"github.com/julienschmidt/httprouter"
 )
 
-var apiRouter *http.ServeMux
+type RoutesMapper map[string]func(w http.ResponseWriter, req *http.Request, _ httprouter.Params)
 
-func GetApiRouter() *http.ServeMux {
+func ping(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	if req.URL.Path == "/api/" {
+		http.Redirect(w, req, "ping", 301)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	response := response.ApiResponse{}
+	// response.Message = "Pong Pong!"
+	// response.Status = true
+	response["message"] = "Pong Pong!"
+	response["status"] = true
+	json.NewEncoder(w).Encode(response)
+}
 
-	apiRouter = http.NewServeMux()
+func ApiRoutes() RoutesMapper {
+	routes := make(RoutesMapper)
+	routeList(routes)
+	return routes
+}
 
-	apiRouter.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		response := response.ApiResponse{}
-		response.Message = "API is working. " + "Your Route is: \"" + req.URL.Path + "\""
-		response.Status = true
-		json.NewEncoder(w).Encode(response)
-	})
-
-	apiRouter.HandleFunc("/api/books", books.Index)
-	return apiRouter
+func routeList(routes RoutesMapper) {
+	routes[""] = ping
+	routes["ping"] = ping
+	routes["books"] = books.Index
 }

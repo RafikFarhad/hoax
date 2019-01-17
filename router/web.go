@@ -3,16 +3,16 @@ package router
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
-var webRouter *http.ServeMux
+func HomePage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Fprintf(w, "Welcome to the world of speed!")
+	fmt.Fprintf(w, "\n")
+	// fmt.Fprintf(w, req.URL.Path)
+}
 
-func GetWebRouter() *http.ServeMux {
-	webRouter = http.NewServeMux()
-	webRouter.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Header().Set("Content-Type", "text/html; UTF-8")
-		fmt.Fprintf(w, "Welcome to the home page!\n")
-		fmt.Fprintf(w, "Your Route is: \""+req.URL.Path+"\"")
-	})
-	return webRouter
+func WebRoutes(router *httprouter.Router) {
+	router.GET("/", HomePage)
 }

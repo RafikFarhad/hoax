@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/RafikFarhad/hoax/router"
+	"github.com/julienschmidt/httprouter"
 )
 
 func apiHandler() *http.ServeMux {
@@ -19,42 +20,24 @@ func apiHandler() *http.ServeMux {
 	return apiServeMux
 }
 
-func bpiHandler() *http.ServeMux {
-	apiServeMux := http.NewServeMux()
-	apiServeMux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Welcome to the BPI home page!")
-		fmt.Fprintf(w, "\n")
-		fmt.Fprintf(w, req.URL.Path)
-	})
-	apiServeMux.HandleFunc("/bpi/1", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Welcome to the BPI/1 home page!")
-	})
-	return apiServeMux
+func HomePage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Fprintf(w, "Welcome to the world of speed!")
+	fmt.Fprintf(w, "\n")
+	// fmt.Fprintf(w, req.URL.Path)
 }
 
 func main() {
 
 	fmt.Println("Serving GO...")
 
-	serveMux := http.NewServeMux()
+	mainRouter := httprouter.New()
 
-	serveMux.Handle("/", router.GetWebRouter())
-	serveMux.Handle("/api/", router.GetApiRouter())
+	router.WebRoutes(mainRouter)
 
-	// serveMux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-	// 	// The "/" pattern matches everything, so we need to check
-	// 	// that we're at the root here.
-	// 	if req.URL.Path != "/" {
-	// 		http.NotFound(w, req)
-	// 		return
-	// 	}
-	// 	fmt.Fprintf(w, "Welcome to the home page!")
-	// })
-	serveMux.HandleFunc("/p", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "pppppppp")
-	})
-	serveMux.HandleFunc("/q", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "qqqqqqqqqqqq")
-	})
-	log.Fatal(http.ListenAndServe(":5000", serveMux))
+	for route, function := range router.ApiRoutes() {
+		mainRouter.GET("/api/"+route, function)
+		fmt.Println("/api/" + route)
+	}
+
+	log.Fatal(http.ListenAndServe(":5000", mainRouter))
 }
