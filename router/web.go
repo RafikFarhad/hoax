@@ -13,6 +13,12 @@ func HomePage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// fmt.Fprintf(w, req.URL.Path)
 }
 
-func WebRoutes(router *httprouter.Router) {
-	router.GET("/", HomePage)
+func WebRoutes() RoutesMapper {
+	routes := make(RoutesMapper)
+	webRouteList(routes)
+	return routes
+}
+
+func webRouteList(routes RoutesMapper) {
+	routes[""] = HomePage
 }

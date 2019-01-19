@@ -9,7 +9,9 @@ watch_dirs = [
   "router",
   "response",
   "model",
-  "controller"
+  "controller",
+  "middleware",
+  "utility"
 ]                    # Directories to watch
 watch_exts = [".go"]               # Extensions to watch
 ignore = [".git", "node_modules"]  # Directories to exclude from watching
