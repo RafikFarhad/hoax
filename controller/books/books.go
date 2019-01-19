@@ -10,7 +10,6 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Content-Type", "application/json")
 	response := response.ApiResponse{}
 	book := []model.Book{
 		{Title: "Awesome Book", Id: 1, Isbn: "100/200", Price: 100},
