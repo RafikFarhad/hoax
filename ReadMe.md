@@ -18,7 +18,7 @@ This doc will be updated as soon as the more module is included in this structur
 - [x] Middleware
 - [ ] Token based authentication
 - [ ] Response Structure
-- [ ] 
+- [ ] Automatic Test
 
 ## License
 
