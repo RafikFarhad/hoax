@@ -22,7 +22,7 @@ This doc will be updated as soon as the more module is included in this structur
 
 ## License
 
-Not decided yet ¯\\_(ツ)_/¯
+Not decided yet ¯\\\_(ツ)\_/¯
 
 ## Disclaimer
 
