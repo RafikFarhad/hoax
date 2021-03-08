@@ -13,6 +13,6 @@ func InitRoutes(http *fiber.App, config *config.HoaxConfig) {
 	// Register web routes
 	InitWebRoutes(http)
 
-	// Register api routes
+	// Register api_v1 routes
 	InitApiRoutes(http)
 }

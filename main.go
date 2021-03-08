@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/RafikFarhad/hoax/app"
 	"github.com/RafikFarhad/hoax/config"
+	"github.com/RafikFarhad/hoax/database"
+	"github.com/RafikFarhad/hoax/http"
+	"github.com/RafikFarhad/hoax/routes"
 )
 
 var (
@@ -21,8 +24,9 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("[INI] %+v", err))
 	}
+
 	// Create app
-	if err := app.CreateApp(hoaxConfig); err != nil {
+	if err := createApp(hoaxConfig); err != nil {
 		panic(err)
 	}
 
@@ -39,4 +43,28 @@ func parseInputArgs() {
 	flag.StringVar(&configFile, "c", "config.sample.ini", "Config File")
 	flag.Parse()
 	hostAddress = fmt.Sprintf("%s:%d", host, port)
+}
+
+func createApp(config *config.HoaxConfig) error {
+	var err error
+	App := &app.Hoax{Config: config}
+
+	// Http server setup
+	App.Http, err = http.CreateHTTPServer(config)
+	if err != nil {
+		fmt.Println("HTTP init error")
+		return err
+	}
+	routes.InitRoutes(App.Http, App.Config)
+
+	// Database setup
+	if config.DbHost != "" {
+		App.Db, err = database.InitMySqlDb(config)
+	}
+	if err != nil {
+		fmt.Println("DB init error")
+		return err
+	}
+	app.App = App
+	return nil
 }
