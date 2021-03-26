@@ -20,6 +20,8 @@ type HoaxConfig struct {
 	DbUser     string `ini:"db_user"`
 	DbPassword string `ini:"db_password"`
 
+	JwtSecret string `ini:"jwt_secret"`
+
 	Logger *logger.Interface
 }
 
@@ -33,13 +35,14 @@ func ParseConfig(hostAddress string, configFile string) (*HoaxConfig, error) {
 	_ = iniData.MapTo(config)
 	_ = iniData.Section("deploy").MapTo(config)
 	_ = iniData.Section("database").MapTo(config)
+	_ = iniData.Section("auth").MapTo(config)
 
 	config.Address = hostAddress
 
 	// Prepare a app side logger
 	if iniData.Section("log").Key("enabled").MustBool(false) {
 		appLogger := logger.New(
-			log.New(os.Stdout, "\r\n[ GORM] ", log.Lshortfile),
+			log.New(os.Stdout, "\r\n", log.Lshortfile),
 			logger.Config{
 				LogLevel: logger.Info, // TODO:: <- need to handle config.ini value
 				Colorful: true,

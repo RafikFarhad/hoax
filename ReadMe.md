@@ -7,7 +7,7 @@ A basic boilerplate for developing Rest API using GoLang and Fiber
 - [x] mysql-driver
 - [x] [ORM](https://github.com/go-gorm/gorm)
 - [x] [INI config parser](https://gopkg.in/ini.v1)
-- [ ] authentication
+- [x] authentication
 - [ ] template engine (!)
 - [ ] swagger-ui
 - [ ] web-socket support

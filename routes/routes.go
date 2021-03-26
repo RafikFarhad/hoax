@@ -11,8 +11,8 @@ func InitRoutes(http *fiber.App, config *config.HoaxConfig) {
 	middleware.DefaultMiddlewares(http, config)
 
 	// Register web routes
-	InitWebRoutes(http)
+	InitWebRoutes(http, config)
 
 	// Register api_v1 routes
-	InitApiRoutes(http)
+	InitApiRoutes(http, config)
 }
