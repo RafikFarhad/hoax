@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/RafikFarhad/hoax/app"
+	"github.com/RafikFarhad/hoax/database"
 )
 
 type User struct {
@@ -30,7 +30,7 @@ func (u *User) WithUserInfo() map[string]interface{} {
 
 func GetUserById(id uint, preloads ...string) (*User, error) {
 	user := &User{}
-	tx := app.App.Db
+	tx := database.AppDb
 	for _, preload := range preloads {
 		tx = tx.Preload(preload)
 	}
@@ -43,7 +43,7 @@ func GetUserById(id uint, preloads ...string) (*User, error) {
 
 func getByKeyAndValue(key string, value string) (*User, error) {
 	user := &User{}
-	result := app.App.Db.Where(key+" = ?", value).First(user)
+	result := database.AppDb.Where(key+" = ?", value).First(user)
 	if result.RowsAffected == 0 {
 		return nil, result.Error
 	}

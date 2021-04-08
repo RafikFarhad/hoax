@@ -8,8 +8,9 @@ A basic boilerplate for developing Rest API using GoLang and Fiber
 - [x] [ORM](https://github.com/go-gorm/gorm)
 - [x] [INI config parser](https://gopkg.in/ini.v1)
 - [x] authentication
+- [ ] pretty error handling (with json)
 - [ ] template engine (!)
-- [ ] swagger-ui
+- [x] swagger-ui
 - [ ] web-socket support
 - [ ] docker image
 

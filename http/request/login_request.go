@@ -1,17 +1,17 @@
-package api_validator
+package request
 
 import (
-	hoax_validator "github.com/RafikFarhad/hoax/http/validator"
+	"github.com/RafikFarhad/hoax/utils"
 	"github.com/go-playground/validator/v10"
 )
 
 type LoginRequest struct {
-	Username string `validate:"required,min=5,max=30"`
-	Password string `validate:"required,min=1,max=50"`
+	Username string `validate:"required,min=5,max=30"example:"user_123"`
+	Password string `validate:"required,min=1,max=50"example:"strong_password"`
 }
 
 func ValidateLoginRequest(req *LoginRequest) *validator.ValidationErrors {
-	validate := hoax_validator.GetValidator()
+	validate := utils.GetValidator()
 	err := validate.Struct(req)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)

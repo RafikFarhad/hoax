@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"github.com/RafikFarhad/hoax/config"
 	"github.com/RafikFarhad/hoax/http/controllers/api_v1"
 	"github.com/RafikFarhad/hoax/http/controllers/api_v1/auth"
@@ -20,7 +19,6 @@ func InitApiRoutes(http *fiber.App, config *config.HoaxConfig) {
 	apiHttp.Post("login", api_v1_auth.Login)
 
 	// Auth
-	fmt.Println(config.JwtSecret)
 	if config.JwtSecret == "" {
 		config.JwtSecret = "random"
 	}

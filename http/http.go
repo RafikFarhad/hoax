@@ -5,9 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateHTTPServer(config *config.HoaxConfig) (*fiber.App, error) {
+var AppHttp *fiber.App
 
-	return fiber.New(fiber.Config{
-		Prefork: config.Prefork,
-	}), nil
+func CreateHTTPServer() error {
+	appConfig := config.AppConfig
+	AppHttp = fiber.New(fiber.Config{
+		Prefork: appConfig.Prefork,
+	})
+	return nil
 }

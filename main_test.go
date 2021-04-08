@@ -24,7 +24,7 @@ func doRequest(uri string) error {
 }
 
 func TestGet(t *testing.T) {
-	N := 10
+	N := 200
 	wg := sync.WaitGroup{}
 	wg.Add(N)
 

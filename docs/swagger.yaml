@@ -1,0 +1,90 @@
+basePath: /
+definitions:
+  request.LoginRequest:
+    properties:
+      password:
+        example: strong_password
+        type: string
+      username:
+        example: user_123
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  response.ApiResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: rafikfarhad@gmail.com
+    name: Hoax Support
+  description: A ready eco-system to build web app faster on the go
+  license: {}
+  title: Hoax
+  version: "1.0"
+paths:
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Login via username and password
+      parameters:
+      - description: raw json body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ApiResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.ApiResponse'
+      summary: Login API
+      tags:
+      - Auth
+  /api/v1/me:
+    get:
+      consumes:
+      - application/json
+      description: Get auth user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ApiResponse'
+      security:
+      - JWT: []
+      summary: Me API
+      tags:
+      - Auth
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

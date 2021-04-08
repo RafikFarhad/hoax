@@ -14,6 +14,7 @@ type HoaxConfig struct {
 	Address string
 	Debug   bool `ini:"debug"`
 
+	Db         string `ini:"db"`
 	DbHost     string `ini:"db_url"`
 	DbPort     string `ini:"db_port"`
 	DbName     string `ini:"db_name"`
@@ -25,19 +26,22 @@ type HoaxConfig struct {
 	Logger *logger.Interface
 }
 
-func ParseConfig(hostAddress string, configFile string) (*HoaxConfig, error) {
+var AppConfig *HoaxConfig
+
+func ParseConfig(hostAddress string, configFile string) error {
 	iniData, err := ini.Load(configFile)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	config := &HoaxConfig{}
 
-	_ = iniData.MapTo(config)
-	_ = iniData.Section("deploy").MapTo(config)
-	_ = iniData.Section("database").MapTo(config)
-	_ = iniData.Section("auth").MapTo(config)
+	AppConfig = &HoaxConfig{}
 
-	config.Address = hostAddress
+	_ = iniData.MapTo(AppConfig)
+	_ = iniData.Section("deploy").MapTo(AppConfig)
+	_ = iniData.Section("database").MapTo(AppConfig)
+	_ = iniData.Section("auth").MapTo(AppConfig)
+
+	AppConfig.Address = hostAddress
 
 	// Prepare a app side logger
 	if iniData.Section("log").Key("enabled").MustBool(false) {
@@ -47,9 +51,7 @@ func ParseConfig(hostAddress string, configFile string) (*HoaxConfig, error) {
 				LogLevel: logger.Info, // TODO:: <- need to handle config.ini value
 				Colorful: true,
 			})
-		config.Logger = &appLogger
+		AppConfig.Logger = &appLogger
 	}
-
-	//fmt.Printf("Config: %+v\n", config)
-	return config, nil
+	return nil
 }
