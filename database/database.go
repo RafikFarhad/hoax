@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/RafikFarhad/hoax/config"
+	logger2 "github.com/RafikFarhad/hoax/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -22,9 +23,15 @@ func InitDatabase() error {
 	default:
 		return errors.New("db of type " + appConfig.Db + " not yet supported")
 	}
+
 	var dbLogger logger.Interface
-	if appConfig.Logger != nil {
-		dbLogger = *appConfig.Logger
+	if appConfig.DbLog {
+		dbLogger = logger.New(
+			logger2.GlobalLogger,
+			logger.Config{
+				LogLevel: logger.Info, // default db log info
+				Colorful: true,
+			})
 	}
 	AppDb, err = gorm.Open(mysql.Open(connectionStr), &gorm.Config{
 		Logger: dbLogger,

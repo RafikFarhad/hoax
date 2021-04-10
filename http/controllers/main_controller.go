@@ -5,12 +5,10 @@ import (
 )
 
 func Welcome(ctx *fiber.Ctx) error {
-	ctx.SendString("Hello World!!!")
-	return ctx.SendStatus(200)
+	return ctx.Status(200).SendString("Hello World!!!")
 }
 
 func About(ctx *fiber.Ctx) error {
-	//App := app.App
-	ctx.SendString("This is about !!!")
-	return ctx.SendStatus(200)
+	return ctx.Status(200).SendString("This is about !!!")
+
 }

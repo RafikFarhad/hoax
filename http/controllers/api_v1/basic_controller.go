@@ -6,5 +6,5 @@ import (
 )
 
 func Ping(ctx *fiber.Ctx) error {
-	return response.SuccessMessage(ctx, "PONG")
+	return response.WithSuccess(ctx, "PONG", nil)
 }

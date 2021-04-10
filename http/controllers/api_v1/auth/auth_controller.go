@@ -24,12 +24,12 @@ import (
 // @Failure 401 {object} response.ApiResponse
 // @Router /api/v1/me [get]
 func Me(ctx *fiber.Ctx) error {
-	userId := ctx.Locals("authData").(types.AuthData).UserId
+	userId := ctx.Locals("auth_data").(types.AuthData).UserId
 	user, err := model.GetUserById(userId, "UserInfo")
 	if err != nil {
-		return response.ErrorMessageWithStatus(ctx, err.Error(), 401)
+		return response.WithError(ctx, err.Error(), 1, 401)
 	}
-	return response.SuccessMessageWithData(ctx, user.WithUserInfo())
+	return response.WithSuccess(ctx, "", response.MakeUserResponse(user))
 }
 
 // Login godoc
@@ -48,30 +48,27 @@ func Login(ctx *fiber.Ctx) error {
 	var err error
 	// parse request
 	if err = ctx.BodyParser(loginRequest); err != nil {
-		return response.ErrorMessageWithStatus(ctx, err.Error(), 422)
+		return response.WithError(ctx, err.Error(), 1, 422)
 	}
 	// validate
 	if validationErr := request.ValidateLoginRequest(loginRequest); validationErr != nil {
-		return response.ValidationError(ctx, validationErr)
+		return response.WithValidationError(ctx, validationErr)
 	}
 	// fetch user from db
 	var user *model.User
 	if user, err = model.GetUserByUsername(loginRequest.Username); err != nil {
-		return response.ErrorMessage(ctx, "Incorrect username and/or password")
+		return response.WithError(ctx, "Incorrect username and/or password")
 	}
 	// match password
 	if matchPassword(user.Password, loginRequest.Password) {
 		// token generate
 		tokenString, expiry, err := generateToken(user)
 		if err != nil {
-			return response.ErrorMessage(ctx, "Token generation error")
+			return response.WithError(ctx, "Token generation error")
 		}
-		return response.SuccessMessageWithData(ctx, &response.LoginResponse{
-			Token:  tokenString,
-			Expiry: expiry,
-		})
+		return response.WithSuccess(ctx, "", response.MakeLoginResponse(tokenString, expiry))
 	}
-	return response.ErrorMessage(ctx, "Incorrect username and/or password")
+	return response.WithError(ctx, "Incorrect username and/or password")
 }
 
 func generateToken(user *model.User) (string, int64, error) {
@@ -81,9 +78,7 @@ func generateToken(user *model.User) (string, int64, error) {
 	expiry := getExpiryTime()
 	// set claims
 	claims := token.Claims.(jwt.MapClaims)
-	//claims["user_id"] = user.Id
-	claims["userId"] = user.Id
-	//claims["user"], _ = user.MarshalJSON()
+	claims["user_id"] = user.Id
 	claims["exp"] = expiry
 	// generate token string
 	tokenString, err := token.SignedString([]byte(config.AppConfig.JwtSecret))

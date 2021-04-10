@@ -21,13 +21,6 @@ func (u *User) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (u *User) WithUserInfo() map[string]interface{} {
-	return map[string]interface{}{
-		"id":       u.Id,
-		"userInfo": u.UserInfo,
-	}
-}
-
 func GetUserById(id uint, preloads ...string) (*User, error) {
 	user := &User{}
 	tx := database.AppDb

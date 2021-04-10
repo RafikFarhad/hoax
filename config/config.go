@@ -2,9 +2,6 @@ package config
 
 import (
 	"gopkg.in/ini.v1"
-	"gorm.io/gorm/logger"
-	"log"
-	"os"
 )
 
 type HoaxConfig struct {
@@ -20,10 +17,11 @@ type HoaxConfig struct {
 	DbName     string `ini:"db_name"`
 	DbUser     string `ini:"db_user"`
 	DbPassword string `ini:"db_password"`
+	DbLog      bool   `ini:"db_log"`
 
 	JwtSecret string `ini:"jwt_secret"`
 
-	Logger *logger.Interface
+	SwaggerEnabled bool `ini:"enable_swagger"`
 }
 
 var AppConfig *HoaxConfig
@@ -40,18 +38,9 @@ func ParseConfig(hostAddress string, configFile string) error {
 	_ = iniData.Section("deploy").MapTo(AppConfig)
 	_ = iniData.Section("database").MapTo(AppConfig)
 	_ = iniData.Section("auth").MapTo(AppConfig)
+	_ = iniData.Section("utils").MapTo(AppConfig)
 
 	AppConfig.Address = hostAddress
 
-	// Prepare a app side logger
-	if iniData.Section("log").Key("enabled").MustBool(false) {
-		appLogger := logger.New(
-			log.New(os.Stdout, "\r\n", log.Lshortfile),
-			logger.Config{
-				LogLevel: logger.Info, // TODO:: <- need to handle config.ini value
-				Colorful: true,
-			})
-		AppConfig.Logger = &appLogger
-	}
 	return nil
 }

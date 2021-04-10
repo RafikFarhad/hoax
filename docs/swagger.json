@@ -41,7 +41,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ApiResponse"
+                            "$ref": "#/definitions/response.LoginResponse"
                         }
                     },
                     "400": {
@@ -81,7 +81,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ApiResponse"
+                            "$ref": "#/definitions/response.UserResponse"
                         }
                     },
                     "401": {
@@ -95,6 +95,57 @@
         }
     },
     "definitions": {
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "created_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_id": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "description": "hasOne",
+                    "type": "object",
+                    "$ref": "#/definitions/model.UserInfo"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "institution": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.LoginRequest": {
             "type": "object",
             "required": [
@@ -115,11 +166,52 @@
         "response.ApiResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer"
-                },
                 "data": {
                     "type": "object"
+                },
+                "error": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.LoginData": {
+            "type": "object",
+            "properties": {
+                "expiry": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "$ref": "#/definitions/response.LoginData"
+                },
+                "error": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "$ref": "#/definitions/model.User"
+                },
+                "error": {
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"

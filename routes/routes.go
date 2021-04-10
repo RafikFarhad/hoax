@@ -7,14 +7,14 @@ import (
 )
 
 func InitRoutes() {
-	config := config.AppConfig
+	appConfig := config.AppConfig
 	httpApp := http.AppHttp
 	// Register default middlewares
-	middleware.DefaultMiddlewares(httpApp, config)
+	middleware.DefaultMiddlewares(httpApp, appConfig)
 
 	// Register web routes
-	InitWebRoutes(httpApp, config)
+	InitWebRoutes(httpApp, appConfig)
 
 	// Register api_v1 routes
-	InitApiRoutes(httpApp, config)
+	InitApiRoutes(httpApp, appConfig)
 }

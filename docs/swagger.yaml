@@ -1,5 +1,39 @@
 basePath: /
 definitions:
+  model.User:
+    properties:
+      created_id:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      updated_id:
+        type: string
+      userInfo:
+        $ref: '#/definitions/model.UserInfo'
+        description: hasOne
+        type: object
+      username:
+        type: string
+    type: object
+  model.UserInfo:
+    properties:
+      avatar:
+        type: string
+      country:
+        type: string
+      created_id:
+        type: string
+      id:
+        type: integer
+      institution:
+        type: string
+      name:
+        type: string
+      updated_id:
+        type: string
+    type: object
   request.LoginRequest:
     properties:
       password:
@@ -14,10 +48,37 @@ definitions:
     type: object
   response.ApiResponse:
     properties:
-      code:
-        type: integer
       data:
         type: object
+      error:
+        type: integer
+      message:
+        type: string
+    type: object
+  response.LoginData:
+    properties:
+      expiry:
+        type: integer
+      token:
+        type: string
+    type: object
+  response.LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.LoginData'
+        type: object
+      error:
+        type: integer
+      message:
+        type: string
+    type: object
+  response.UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.User'
+        type: object
+      error:
+        type: integer
       message:
         type: string
     type: object
@@ -49,7 +110,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ApiResponse'
+            $ref: '#/definitions/response.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -72,7 +133,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ApiResponse'
+            $ref: '#/definitions/response.UserResponse'
         "401":
           description: Unauthorized
           schema:

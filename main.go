@@ -7,6 +7,7 @@ import (
 	"github.com/RafikFarhad/hoax/database"
 	_ "github.com/RafikFarhad/hoax/docs"
 	"github.com/RafikFarhad/hoax/http"
+	"github.com/RafikFarhad/hoax/logger"
 	"github.com/RafikFarhad/hoax/routes"
 )
 
@@ -42,7 +43,10 @@ func main() {
 	}
 
 	// Start Http Server
-	http.AppHttp.Listen(appConfig.Address)
+	err = http.AppHttp.Listen(appConfig.Address)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func parseInputArgs() {
@@ -59,7 +63,14 @@ func parseInputArgs() {
 func createApp(config *config.HoaxConfig) error {
 	var err error
 
-	// Http server setup
+	// global logger setup
+	err = logger.CreateLogger()
+	if err != nil {
+		fmt.Println("logger init error")
+		return err
+	}
+
+	// http server setup
 	err = http.CreateHTTPServer()
 	if err != nil {
 		fmt.Println("HTTP init error")
@@ -67,7 +78,7 @@ func createApp(config *config.HoaxConfig) error {
 	}
 	routes.InitRoutes()
 
-	// Database setup
+	// database setup
 	if config.Db != "" {
 		err = database.InitDatabase()
 	}

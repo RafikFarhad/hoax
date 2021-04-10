@@ -10,9 +10,9 @@ type UserInfo struct {
 	Avatar      string `gorm:"size:100" json:"avatar"`
 	Institution string `gorm:"size:100" json:"institution"`
 	Country     string `gorm:"size:2" json:"country"`
-	UserId      uint
+	UserId      uint   `json:"-"`
 	// belongsTo
-	User *User
+	User *User `json:"-"`
 }
 
 func (u *UserInfo) MarshalJSON() ([]byte, error) {
