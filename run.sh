@@ -6,6 +6,7 @@ MODE=$1
 
 if [ "$MODE" = "dev" ] ; then
    CompileDaemon -command="./hoax ${@:2}" \
+    -exclude-dir=.git
     -color=true \
     -graceful-kill=true
 else

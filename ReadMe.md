@@ -21,7 +21,7 @@ A basic boilerplate for developing Rest API using GoLang and Fiber
 
 There is a `config.sample.ini` file which will be parsed by default. Custom `config.ini` file can be provided by
 ```shell
-go run main.go -c config.ini
+go run main.go -c dev.config.ini
 ```
 
 #### Other Args

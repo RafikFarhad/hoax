@@ -6,6 +6,7 @@ import (
 	"github.com/RafikFarhad/hoax/config"
 	logger2 "github.com/RafikFarhad/hoax/logger"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -15,26 +16,29 @@ var AppDb *gorm.DB
 func InitDatabase() error {
 	appConfig := config.AppConfig
 	var err error
-	var connectionStr string
-	switch appConfig.Db {
-	case "mysql":
-		connectionStr = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", appConfig.DbUser, appConfig.DbPassword, appConfig.DbHost, appConfig.DbPort, appConfig.DbName)
-		break
-	default:
-		return errors.New("db of type " + appConfig.Db + " not yet supported")
-	}
 
-	var dbLogger logger.Interface
-	if appConfig.DbLog {
-		dbLogger = logger.New(
+	gormConfig := &gorm.Config{}
+	if appConfig.DbConfig.Log {
+		gormConfig.Logger = logger.New(
 			logger2.GlobalLogger,
 			logger.Config{
 				LogLevel: logger.Info, // default db log info
 				Colorful: true,
 			})
 	}
-	AppDb, err = gorm.Open(mysql.Open(connectionStr), &gorm.Config{
-		Logger: dbLogger,
-	})
+	switch appConfig.DbConfig.Agent {
+	case "":
+		return nil
+	case "mysql":
+		connectionStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", appConfig.DbConfig.User, appConfig.DbConfig.Password, appConfig.DbConfig.Host, appConfig.DbConfig.Port, appConfig.DbConfig.Name)
+		AppDb, err = gorm.Open(mysql.Open(connectionStr), gormConfig)
+		break
+	case "sqlite":
+		connectionStr := fmt.Sprintf("%s", appConfig.DbConfig.Path)
+		AppDb, err = gorm.Open(sqlite.Open(connectionStr), gormConfig)
+		break
+	default:
+		return errors.New("db of type " + appConfig.DbConfig.Agent + " not yet supported")
+	}
 	return err
 }

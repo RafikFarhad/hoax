@@ -5,11 +5,13 @@ go 1.16
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/arsmn/fiber-swagger/v2 v2.6.0
+	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
+	github.com/go-redis/redis/v8 v8.8.0 // indirect
 	github.com/gofiber/fiber/v2 v2.7.1
 	github.com/gofiber/helmet/v2 v2.1.1
 	github.com/gofiber/jwt/v2 v2.2.0
@@ -26,5 +28,6 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/ini.v1 v1.62.0
 	gorm.io/driver/mysql v1.0.4
+	gorm.io/driver/sqlite v1.1.4 // indirect
 	gorm.io/gorm v1.20.12
 )

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"github.com/RafikFarhad/hoax/cache"
 	"github.com/RafikFarhad/hoax/config"
 	"github.com/RafikFarhad/hoax/database"
+	"github.com/RafikFarhad/hoax/database/model"
 	_ "github.com/RafikFarhad/hoax/docs"
 	"github.com/RafikFarhad/hoax/http"
 	"github.com/RafikFarhad/hoax/logger"
@@ -12,8 +15,9 @@ import (
 )
 
 var (
-	configFile  string
-	hostAddress string
+	configFile    string
+	hostAddress   string
+	autoMigration bool
 )
 
 // @title Hoax
@@ -32,6 +36,8 @@ func main() {
 
 	// Parse .env
 	err := config.ParseConfig(hostAddress, configFile)
+	//fmt.Printf("[DEBUG] %+v", config.AppConfig)
+
 	appConfig := config.AppConfig
 	if err != nil {
 		panic(fmt.Sprintf("[INI] %+v", err))
@@ -53,37 +59,43 @@ func parseInputArgs() {
 	var host string
 	var port int
 	// Parse cmd args
-	flag.StringVar(&host, "h", "127.0.0.1", "Host")
-	flag.IntVar(&port, "p", 3000, "Port")
-	flag.StringVar(&configFile, "c", "config.sample.ini", "AppConfig File")
+	flag.StringVar(&host, "h", "127.0.0.1", "host")
+	flag.IntVar(&port, "p", 3000, "port")
+	flag.StringVar(&configFile, "c", "config.ini", "config file")
+	flag.BoolVar(&autoMigration, "m", false, "run auto migration")
 	flag.Parse()
 	hostAddress = fmt.Sprintf("%s:%d", host, port)
 }
 
 func createApp(config *config.HoaxConfig) error {
-	var err error
 
 	// global logger setup
-	err = logger.CreateLogger()
-	if err != nil {
+	if err := logger.CreateLogger(); err != nil {
 		fmt.Println("logger init error")
 		return err
 	}
 
 	// http server setup
-	err = http.CreateHTTPServer()
-	if err != nil {
+	if err := http.CreateHTTPServer(); err != nil {
 		fmt.Println("HTTP init error")
 		return err
 	}
 	routes.InitRoutes()
 
 	// database setup
-	if config.Db != "" {
-		err = database.InitDatabase()
-	}
-	if err != nil {
+	if err := database.InitDatabase(); err != nil {
 		fmt.Println("DB init error")
+		return err
+	}
+	if autoMigration {
+		if err := model.RunAutoMigrate(); err != nil {
+			return errors.New("auto migration failed")
+		}
+	}
+
+	// cache setup
+	if err := cache.InitCache(); err != nil {
+		fmt.Println("cache init error")
 		return err
 	}
 	return nil

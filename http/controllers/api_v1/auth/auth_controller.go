@@ -7,10 +7,16 @@ import (
 	"github.com/RafikFarhad/hoax/http/request"
 	"github.com/RafikFarhad/hoax/http/response"
 	"github.com/RafikFarhad/hoax/types"
+	"github.com/dchest/uniuri"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"strconv"
 	"time"
+)
+
+const (
+	TokenValidity = 12 * time.Hour
 )
 
 // Me godoc
@@ -75,18 +81,17 @@ func generateToken(user *model.User) (string, int64, error) {
 	// create token
 	token := jwt.New(jwt.SigningMethodHS256)
 	// session expiry time
-	expiry := getExpiryTime()
+	expiry := time.Now().Add(TokenValidity).Unix()
+	// salt
+	salt := uniuri.NewLen(8)
 	// set claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = user.Id
+	claims["id"] = strconv.Itoa(int(user.Id)) + "::" + user.Username + "::" + salt
 	claims["exp"] = expiry
 	// generate token string
 	tokenString, err := token.SignedString([]byte(config.AppConfig.JwtSecret))
 	return tokenString, expiry, err
-}
-
-func getExpiryTime() int64 {
-	return time.Now().Add(24 * time.Hour).Unix()
 }
 
 func matchPassword(hash string, password string) bool {

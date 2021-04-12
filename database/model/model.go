@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/RafikFarhad/hoax/database"
 	"gorm.io/gorm"
 	"time"
 )
@@ -16,4 +17,10 @@ type Model struct {
 type PlainModel struct {
 	*gorm.Model
 	Id uint `gorm:"primarykey" json:"id"`
+}
+
+func RunAutoMigrate() error {
+	return database.AppDb.AutoMigrate(
+		User{},
+		UserInfo{})
 }

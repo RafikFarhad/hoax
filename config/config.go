@@ -5,23 +5,16 @@ import (
 )
 
 type HoaxConfig struct {
-	Env     string `ini:"env"`
-	Prefork bool   `ini:"prefork"`
-	AppUrl  string `ini:"app_url"`
-	Address string
-	Debug   bool `ini:"debug"`
+	Env            string `ini:"env"`
+	Prefork        bool   `ini:"prefork"`
+	AppUrl         string `ini:"app_url"`
+	Address        string
+	Debug          bool   `ini:"debug"`
+	JwtSecret      string `ini:"jwt_secret"`
+	SwaggerEnabled bool   `ini:"enable_swagger"`
 
-	Db         string `ini:"db"`
-	DbHost     string `ini:"db_url"`
-	DbPort     string `ini:"db_port"`
-	DbName     string `ini:"db_name"`
-	DbUser     string `ini:"db_user"`
-	DbPassword string `ini:"db_password"`
-	DbLog      bool   `ini:"db_log"`
-
-	JwtSecret string `ini:"jwt_secret"`
-
-	SwaggerEnabled bool `ini:"enable_swagger"`
+	DbConfig    *DbConfig
+	CacheConfig *CacheConfig
 }
 
 var AppConfig *HoaxConfig
@@ -32,15 +25,18 @@ func ParseConfig(hostAddress string, configFile string) error {
 		return err
 	}
 
-	AppConfig = &HoaxConfig{}
+	AppConfig = &HoaxConfig{
+		CacheConfig: &CacheConfig{},
+		DbConfig:    &DbConfig{},
+	}
 
 	_ = iniData.MapTo(AppConfig)
 	_ = iniData.Section("deploy").MapTo(AppConfig)
-	_ = iniData.Section("database").MapTo(AppConfig)
 	_ = iniData.Section("auth").MapTo(AppConfig)
 	_ = iniData.Section("utils").MapTo(AppConfig)
+	_ = iniData.Section("database").MapTo(AppConfig.DbConfig)
+	_ = iniData.Section("cache").MapTo(AppConfig.CacheConfig)
 
 	AppConfig.Address = hostAddress
-
 	return nil
 }
