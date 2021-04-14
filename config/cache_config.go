@@ -8,3 +8,9 @@ type CacheConfig struct {
 	RedisPassword string `ini:"redis_password"`
 	RedisDb       int    `ini:"redis_db"`
 }
+
+func NewCacheConfig() *CacheConfig {
+	return &CacheConfig{
+		Agent: "memory",
+	}
+}

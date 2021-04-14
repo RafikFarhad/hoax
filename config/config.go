@@ -15,6 +15,7 @@ type HoaxConfig struct {
 
 	DbConfig    *DbConfig
 	CacheConfig *CacheConfig
+	LogConfig   *LogConfig
 }
 
 var AppConfig *HoaxConfig
@@ -26,8 +27,9 @@ func ParseConfig(hostAddress string, configFile string) error {
 	}
 
 	AppConfig = &HoaxConfig{
-		CacheConfig: &CacheConfig{},
-		DbConfig:    &DbConfig{},
+		CacheConfig: NewCacheConfig(),
+		DbConfig:    NewDbConfig(),
+		LogConfig:   NewLogConfig(),
 	}
 
 	_ = iniData.MapTo(AppConfig)
@@ -36,6 +38,7 @@ func ParseConfig(hostAddress string, configFile string) error {
 	_ = iniData.Section("utils").MapTo(AppConfig)
 	_ = iniData.Section("database").MapTo(AppConfig.DbConfig)
 	_ = iniData.Section("cache").MapTo(AppConfig.CacheConfig)
+	_ = iniData.Section("log").MapTo(AppConfig.LogConfig)
 
 	AppConfig.Address = hostAddress
 	return nil

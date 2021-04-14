@@ -31,25 +31,23 @@ var (
 // @host localhost:3000
 // @BasePath /
 func main() {
-	// Parse cmd args
+	// parse cmd args
 	parseInputArgs()
 
-	// Parse .env
-	err := config.ParseConfig(hostAddress, configFile)
+	// parse .ini
+	if err := config.ParseConfig(hostAddress, configFile); err != nil {
+		panic(fmt.Sprintf("ini parsing failed :: %+v", err))
+	}
+	appConfig := config.AppConfig
 	//fmt.Printf("[DEBUG] %+v", config.AppConfig)
 
-	appConfig := config.AppConfig
-	if err != nil {
-		panic(fmt.Sprintf("[INI] %+v", err))
-	}
-
-	// Create app
-	if err := createApp(appConfig); err != nil {
+	// create app
+	if err := createApp(); err != nil {
 		panic(err)
 	}
 
-	// Start Http Server
-	err = http.AppHttp.Listen(appConfig.Address)
+	// start Http Server
+	err := http.AppHttp.Listen(appConfig.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +56,7 @@ func main() {
 func parseInputArgs() {
 	var host string
 	var port int
-	// Parse cmd args
+	// parse command line args
 	flag.StringVar(&host, "h", "127.0.0.1", "host")
 	flag.IntVar(&port, "p", 3000, "port")
 	flag.StringVar(&configFile, "c", "config.ini", "config file")
@@ -67,24 +65,19 @@ func parseInputArgs() {
 	hostAddress = fmt.Sprintf("%s:%d", host, port)
 }
 
-func createApp(config *config.HoaxConfig) error {
-
+func createApp() error {
 	// global logger setup
-	if err := logger.CreateLogger(); err != nil {
+	if err := logger.InitLog(); err != nil {
 		fmt.Println("logger init error")
 		return err
 	}
-
 	// http server setup
 	if err := http.CreateHTTPServer(); err != nil {
-		fmt.Println("HTTP init error")
 		return err
 	}
 	routes.InitRoutes()
-
 	// database setup
 	if err := database.InitDatabase(); err != nil {
-		fmt.Println("DB init error")
 		return err
 	}
 	if autoMigration {
@@ -92,10 +85,8 @@ func createApp(config *config.HoaxConfig) error {
 			return errors.New("auto migration failed")
 		}
 	}
-
 	// cache setup
 	if err := cache.InitCache(); err != nil {
-		fmt.Println("cache init error")
 		return err
 	}
 	return nil

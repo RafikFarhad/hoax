@@ -7,6 +7,7 @@ import (
 )
 
 type RedisCache struct {
+	ProviderInterface
 	redisClient *redis.Client
 }
 

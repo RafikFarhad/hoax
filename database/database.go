@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/RafikFarhad/hoax/config"
-	logger2 "github.com/RafikFarhad/hoax/logger"
+	"github.com/rs/zerolog/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -20,10 +20,10 @@ func InitDatabase() error {
 	gormConfig := &gorm.Config{}
 	if appConfig.DbConfig.Log {
 		gormConfig.Logger = logger.New(
-			logger2.GlobalLogger,
+			&log.Logger,
 			logger.Config{
-				LogLevel: logger.Info, // default db log info
-				Colorful: true,
+				LogLevel: logger.Info,
+				Colorful: false,
 			})
 	}
 	switch appConfig.DbConfig.Agent {

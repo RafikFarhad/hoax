@@ -18,3 +18,5 @@
 main
 hoax
 dev.config.ini
+app.db
+app.log

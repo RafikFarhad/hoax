@@ -10,3 +10,9 @@ type DbConfig struct {
 	Password string `ini:"db_password"`
 	Log      bool   `ini:"db_log"`
 }
+
+func NewDbConfig() *DbConfig {
+	return &DbConfig{
+		Log: false,
+	}
+}

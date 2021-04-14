@@ -63,6 +63,7 @@ func Login(ctx *fiber.Ctx) error {
 	// fetch user from db
 	var user *model.User
 	if user, err = model.GetUserByUsername(loginRequest.Username); err != nil {
+		// TODO :: error may be db error
 		return response.WithError(ctx, "Incorrect username and/or password")
 	}
 	// match password

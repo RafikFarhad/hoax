@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/RafikFarhad/hoax/config"
-	logger2 "github.com/RafikFarhad/hoax/logger"
 	"github.com/RafikFarhad/hoax/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -12,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
+	"github.com/rs/zerolog/log"
 )
 
 func DefaultMiddlewares(http *fiber.App, config *config.HoaxConfig) {
@@ -32,7 +32,7 @@ func DefaultMiddlewares(http *fiber.App, config *config.HoaxConfig) {
 	// logger & pprof
 	if config.Debug {
 		http.Use(logger.New(logger.Config{
-			Output: logger2.GlobalLogger.Writer(),
+			Output: log.Logger,
 		}))
 		http.Use(pprof.New())
 	} else {
