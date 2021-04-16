@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+//var NotFound = errors.New("not found")
+
 type Model struct {
 	*gorm.Model
 	Id        uint           `gorm:"primarykey" json:"id"`

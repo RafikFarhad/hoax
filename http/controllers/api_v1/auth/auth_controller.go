@@ -1,6 +1,7 @@
 package api_v1_auth
 
 import (
+	"errors"
 	"github.com/RafikFarhad/hoax/config"
 	"github.com/RafikFarhad/hoax/database/model"
 	_ "github.com/RafikFarhad/hoax/docs"
@@ -11,6 +12,7 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"strconv"
 	"time"
 )
@@ -31,8 +33,8 @@ const (
 // @Router /api/v1/me [get]
 func Me(ctx *fiber.Ctx) error {
 	userId := ctx.Locals("auth_data").(types.AuthData).UserId
-	user, err := model.GetUserById(userId, "UserInfo")
-	if err != nil {
+	user := &model.User{}
+	if err := model.GetUserById(user, userId, "UserInfo"); err != nil {
 		return response.WithError(ctx, err.Error(), 1, 401)
 	}
 	return response.WithSuccess(ctx, "", response.MakeUserResponse(user))
@@ -61,10 +63,12 @@ func Login(ctx *fiber.Ctx) error {
 		return response.WithValidationError(ctx, validationErr)
 	}
 	// fetch user from db
-	var user *model.User
-	if user, err = model.GetUserByUsername(loginRequest.Username); err != nil {
-		// TODO :: error may be db error
-		return response.WithError(ctx, "Incorrect username and/or password")
+	user := &model.User{}
+	if err = model.GetUserByUsername(user, loginRequest.Username); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.WithError(ctx, "Incorrect username and/or password")
+		}
+		return response.WithError(ctx, err.Error())
 	}
 	// match password
 	if matchPassword(user.Password, loginRequest.Password) {

@@ -21,32 +21,20 @@ func (u *User) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func GetUserById(id uint, preloads ...string) (*User, error) {
-	user := &User{}
+func GetUserById(user *User, id uint, preloads ...string) error {
 	tx := database.AppDb
 	for _, preload := range preloads {
 		tx = tx.Preload(preload)
 	}
 	result := tx.First(user, id)
-	if result.RowsAffected == 0 {
-		return nil, result.Error
-	}
-	return user, result.Error
+	return result.Error
 }
 
-func getByKeyAndValue(key string, value string) (*User, error) {
-	user := &User{}
+func GetUserByUsername(user *User, username string) error {
+	return getUserByKeyAndValue(user, "username", username)
+}
+
+func getUserByKeyAndValue(user *User, key string, value string) error {
 	result := database.AppDb.Where(key+" = ?", value).First(user)
-	if result.RowsAffected == 0 {
-		return nil, result.Error
-	}
-	return user, result.Error
-}
-
-func GetUserByUsername(username string) (*User, error) {
-	return getByKeyAndValue("username", username)
-}
-
-func GetUserByEmail(email string) (*User, error) {
-	return getByKeyAndValue("email", email)
+	return result.Error
 }
