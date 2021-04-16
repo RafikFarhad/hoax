@@ -1,17 +1,12 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
-	"github.com/RafikFarhad/hoax/cache"
+	"github.com/RafikFarhad/hoax/app"
 	"github.com/RafikFarhad/hoax/config"
-	"github.com/RafikFarhad/hoax/database"
-	"github.com/RafikFarhad/hoax/database/model"
 	_ "github.com/RafikFarhad/hoax/docs"
 	"github.com/RafikFarhad/hoax/http"
-	"github.com/RafikFarhad/hoax/logger"
-	"github.com/RafikFarhad/hoax/routes"
 )
 
 var (
@@ -38,16 +33,14 @@ func main() {
 	if err := config.ParseConfig(hostAddress, configFile); err != nil {
 		panic(fmt.Sprintf("ini parsing failed :: %+v", err))
 	}
-	appConfig := config.AppConfig
-	//fmt.Printf("[DEBUG] %+v", config.AppConfig)
 
 	// create app
-	if err := createApp(); err != nil {
+	if err := app.CreateApp(true); err != nil {
 		panic(err)
 	}
 
 	// start Http Server
-	err := http.AppHttp.Listen(appConfig.Address)
+	err := http.AppHttp.Listen(config.AppConfig.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -63,31 +56,4 @@ func parseInputArgs() {
 	flag.BoolVar(&autoMigration, "m", false, "run auto migration")
 	flag.Parse()
 	hostAddress = fmt.Sprintf("%s:%d", host, port)
-}
-
-func createApp() error {
-	// global logger setup
-	if err := logger.InitLog(); err != nil {
-		fmt.Println("logger init error")
-		return err
-	}
-	// http server setup
-	if err := http.CreateHTTPServer(); err != nil {
-		return err
-	}
-	routes.InitRoutes()
-	// database setup
-	if err := database.InitDatabase(); err != nil {
-		return err
-	}
-	if autoMigration {
-		if err := model.RunAutoMigrate(); err != nil {
-			return errors.New("auto migration failed")
-		}
-	}
-	// cache setup
-	if err := cache.InitCache(); err != nil {
-		return err
-	}
-	return nil
 }
